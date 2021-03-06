@@ -10,9 +10,8 @@
     Zac Staples' Arduino_Vector library
 */
 
-#include "setup_gccpcb2.h"
+#include "setup_smashbox.h"
 
-#include "DefaultKeyboardMode.h"
 #include "FgcMode.h"
 #include "InputMode.h"
 #include "Melee18Button.h"
@@ -39,25 +38,18 @@ extern InputMode *gCurrentMode;
 extern state::InputState gInputState;
 
 void selectInputMode() {
-  if (gInputState.mod_x && !gInputState.mod_y && gInputState.start) {
-    if (gInputState.l) {
-      delete gCurrentMode;
-      gCurrentMode = new Melee20Button(socd::SOCD_2IP_NO_REAC, gInputState,
-                                       gCurrentBackend);
-    } else if (gInputState.left) {
-      delete gCurrentMode;
-      gCurrentMode = new ProjectM(socd::SOCD_2IP_NO_REAC, gInputState,
-                                  gCurrentBackend, true, false);
-    } else if (gInputState.down) {
-      delete gCurrentMode;
-      gCurrentMode =
-          new FgcMode(socd::SOCD_NEUTRAL, gInputState, gCurrentBackend);
-    }
-  } else if (gInputState.mod_y && !gInputState.mod_x && gInputState.start) {
-    if (gInputState.l) {
-      delete gCurrentMode;
-      gCurrentMode = new DefaultKeyboardMode(socd::SOCD_2IP, gInputState);
-    }
+  if (gInputState.profile1) {
+    delete gCurrentMode;
+    gCurrentMode =
+        new FgcMode(socd::SOCD_NEUTRAL, gInputState, gCurrentBackend);
+  } else if (gInputState.profile3) {
+    delete gCurrentMode;
+    gCurrentMode = new ProjectM(socd::SOCD_2IP_NO_REAC, gInputState,
+                                gCurrentBackend, true, true);
+  } else {
+    delete gCurrentMode;
+    gCurrentMode = new Melee20Button(socd::SOCD_2IP_NO_REAC, gInputState,
+                                     gCurrentBackend);
   }
 }
 
@@ -69,8 +61,6 @@ void readInputs() {
   gInputState.mod_x = (digitalRead(pinout::MODX) == LOW);
   gInputState.mod_y = (digitalRead(pinout::MODY) == LOW);
   gInputState.start = (digitalRead(pinout::START) == LOW);
-  gInputState.select = (digitalRead(pinout::SELECT) == LOW);
-  gInputState.home = (digitalRead(pinout::HOME) == LOW);
   gInputState.b = (digitalRead(pinout::B) == LOW);
   gInputState.x = (digitalRead(pinout::X) == LOW);
   gInputState.z = (digitalRead(pinout::Z) == LOW);
@@ -84,6 +74,9 @@ void readInputs() {
   gInputState.c_right = (digitalRead(pinout::CRIGHT) == LOW);
   gInputState.c_left = (digitalRead(pinout::CLEFT) == LOW);
   gInputState.c_up = (digitalRead(pinout::CUP) == LOW);
+  gInputState.rocker = (digitalRead(pinout::ROCKER) == LOW);
+  gInputState.profile1 = (digitalRead(pinout::PROFILE1) == LOW);
+  gInputState.profile3 = (digitalRead(pinout::PROFILE3) == LOW);
 }
 
 void setup() {
@@ -94,8 +87,6 @@ void setup() {
   pinMode(pinout::MODX, INPUT_PULLUP);
   pinMode(pinout::MODY, INPUT_PULLUP);
   pinMode(pinout::START, INPUT_PULLUP);
-  pinMode(pinout::SELECT, INPUT_PULLUP);
-  pinMode(pinout::HOME, INPUT_PULLUP);
   pinMode(pinout::B, INPUT_PULLUP);
   pinMode(pinout::X, INPUT_PULLUP);
   pinMode(pinout::Z, INPUT_PULLUP);
@@ -109,6 +100,9 @@ void setup() {
   pinMode(pinout::CUP, INPUT_PULLUP);
   pinMode(pinout::LIGHTSHIELD, INPUT_PULLUP);
   pinMode(pinout::MIDSHIELD, INPUT_PULLUP);
+  pinMode(pinout::ROCKER, INPUT_PULLUP);
+  pinMode(pinout::PROFILE1, INPUT_PULLUP);
+  pinMode(pinout::PROFILE3, INPUT_PULLUP);
 
   // Read inputs into gInputState initially to make backend selection logic in
   // initialise() a bit cleaner.
