@@ -29,6 +29,10 @@ enum pinout {
   Y = 43,
   LIGHTSHIELD = 40,
   MIDSHIELD = 12,
+  
+  ROCKER = 51,
+  PROFILE1 = 38,
+  PROFILE3 = 39,
 };
 } // namespace pinout
 
