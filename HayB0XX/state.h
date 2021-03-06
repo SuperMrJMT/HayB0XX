@@ -36,6 +36,9 @@ typedef struct {
   bool e_4;
   bool e_5;
   bool e_6;
+  bool rocker;
+  bool profile1;
+  bool profile3;
 } InputState;
 
 // State describing stick direction at the quadrant level.
