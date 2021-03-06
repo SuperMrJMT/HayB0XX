@@ -17,9 +17,9 @@ state::InputState gInputState;
 
 void initialise() {
   /* Choose communication backend. */
-  if (gInputState.c_left) {
-    // Hold C-Left on plugin for N64 mode.
-    gCurrentBackend = new N64Backend(60, pinout::GCC_DATA);
+  if (gInputState.rocker) {
+    // Flip rocker on plugin for Dolphin mode.
+    gCurrentBackend = new GamecubeBackend(1000, pinout::GCC_DATA);
   } else {
     // Default to GameCube mode.
     gCurrentBackend = new GamecubeBackend(125, pinout::GCC_DATA);
@@ -27,8 +27,16 @@ void initialise() {
 
   /* Always start in Melee mode. Must set mode only after initialising the
      backend. */
-  gCurrentMode =
-      new Melee20Button(socd::SOCD_2IP_NO_REAC, gInputState, gCurrentBackend);
+  if (gInputState.profile1) {
+    gCurrentMode =
+        new FgcMode(socd::SOCD_NEUTRAL, gInputState, gCurrentBackend);
+  } else if (gInputState.profile3) {
+    gCurrentMode = new ProjectM(socd::SOCD_2IP_NO_REAC, gInputState,
+                                gCurrentBackend, true, true);
+  } else {
+    gCurrentMode = new Melee20Button(socd::SOCD_2IP_NO_REAC, gInputState,
+                                     gCurrentBackend);
+  }
 
   // Uncomment the following to enable input viewer when USB and GameCube
   // cable are both connected. Not sure if this works on Smash Box.
